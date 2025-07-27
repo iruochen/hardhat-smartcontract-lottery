@@ -35,18 +35,26 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
 	} // uint256 0 = OPEN, 1 = CALCULATING
 
 	/** State Variables */
+	// ETH required to enter the raffle
 	uint256 private immutable i_entranceFee;
+	// players in the raffle
 	address payable[] private s_players;
+	// The gas lane key hash value, which is the maximum gas price you are willing to pay for a request in wei.
 	bytes32 private immutable i_gasLine;
+	// The subscription ID that this contract uses for funding requests.
 	uint256 private immutable i_subscriptionId;
+	// The limit for how much gas to use for the callback request to your contract's fulfillRandomWords function.
 	uint32 private immutable i_callbackGasLimit;
 	uint16 private constant REQUEST_CONFIRMATIONS = 3;
 	uint32 private constant NUM_WORDS = 1;
 
 	// Lottery Variables
+	// The address of the most recent winner
 	address private s_recentWinner;
 	RaffleState private s_raffleState;
+	// The timestamp of the last time the raffle was drawn
 	uint256 private s_lastTimeStamp;
+	// The interval at which the raffle is drawn
 	uint256 private immutable i_interval;
 
 	/** Events */
@@ -56,7 +64,7 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
 
 	/** Functions */
 	constructor(
-		address vrfCoordinator,
+		address vrfCoordinator, // contract
 		uint256 entranceFee,
 		bytes32 gasLine,
 		uint256 subscriptionId,
