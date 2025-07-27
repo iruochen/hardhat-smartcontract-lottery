@@ -84,3 +84,14 @@ raffle = await ethers.getContractAt(
 // The address of raffle
 raffle.target
 ```
+
+## Tools
+### Chainlink
+- [Chainlink VRF]('https://vrf.chain.link/')
+- [Chainlink Keeper]('https://automation.chain.link/')
+
+### hardhat
+- [hardhat-shorthand]('https://hardhat.org/hardhat-runner/docs/guides/command-line-completion'): After doing this running `hh` will be equivalent to running `npx hardhat`
+```shell
+npm install --global hardhat-shorthand
+```
