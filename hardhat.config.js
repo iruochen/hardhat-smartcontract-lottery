@@ -19,7 +19,7 @@ module.exports = {
 			chainId: 11155111,
 			blockConfirmations: 6,
 			url: SEPOLIA_RPC_URL,
-			accounts: [PRIVATE_KEY, PRIVATE_KEY_1]
+			accounts: [PRIVATE_KEY, PRIVATE_KEY_1],
 		},
 	},
 	namedAccounts: {
@@ -29,5 +29,16 @@ module.exports = {
 		player: {
 			default: 1,
 		},
+	},
+	gasReporter: {
+		enabled: false,
+		currency: 'USD',
+		outputFile: 'gas-report.txt',
+		noColors: true,
+		// coinmarketcap: process.env.COINMARKETCAP_API_KEY
+	},
+	mocha: {
+		// 200 s
+		timeout: 200000,
 	},
 }

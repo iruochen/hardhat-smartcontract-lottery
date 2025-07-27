@@ -8,15 +8,13 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
 	const { deploy, log } = deployments
 	const { deployer } = await getNamedAccounts()
 	const chainId = network.config.chainId
-	const singer = await ethers.getSigner(deployer)
-	let vrfCoordinatorV2_5Address, subscriptionId
+	let vrfCoordinatorV2_5Address, subscriptionId, vrfCoordinatorV2_5Mock
 
 	if (developmentChains.includes(network.name)) {
 		const vrfDeployment = await deployments.get('VRFCoordinatorV2_5Mock')
-		const vrfCoordinatorV2_5Mock = await ethers.getContractAt(
+		vrfCoordinatorV2_5Mock = await ethers.getContractAt(
 			'VRFCoordinatorV2_5Mock',
 			vrfDeployment.address,
-			singer,
 		)
 		vrfCoordinatorV2_5Address = vrfCoordinatorV2_5Mock.target
 		// Call the createSubscription function (which VRFCoordinatorV2_5Mock inherits) to create a new subscription.
@@ -53,6 +51,10 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
 		log: true,
 		waitConfirmations: network.config.blockConfirmations || 1,
 	})
+
+	if (developmentChains.includes(network.name)) {
+		await vrfCoordinatorV2_5Mock.addConsumer(subscriptionId, raffle.address)
+	}
 
 	// verify the contract if not on a local chain
 	if (
