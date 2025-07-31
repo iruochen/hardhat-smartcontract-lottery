@@ -24,8 +24,10 @@ const networkConfig = {
 }
 
 const developmentChains = ['hardhat', 'localhost']
+const UPDATE_FRONT_END = true
 
 module.exports = {
 	networkConfig,
 	developmentChains,
+	UPDATE_FRONT_END,
 }
