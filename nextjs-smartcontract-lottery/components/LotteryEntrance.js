@@ -3,11 +3,15 @@ import { abi, contractAddress } from "@/constants"
 import { useMoralis } from "react-moralis"
 import { useEffect, useState } from "react"
 import { ethers } from "ethers"
+import { useNotification } from "@web3uikit/core"
+import { Bell } from "@web3uikit/icons"
 
 export default function LotteryEntrance() {
 	const { chainId: chainIdHex, isWeb3Enabled } = useMoralis()
 	const chainId = parseInt(chainIdHex)
 	const [entranceFee, setEntranceFee] = useState("0")
+
+	const dispatch = useNotification()
 
 	const raffleAddress =
 		chainId in contractAddress ? contractAddress[chainId][0] : null
@@ -27,6 +31,21 @@ export default function LotteryEntrance() {
 		params: {},
 	})
 
+	const handleSuccess = async (tx) => {
+		await tx.wait(1)
+		handleNewNotification(tx)
+	}
+
+	const handleNewNotification = () => {
+		dispatch({
+			type: "info",
+			message: "Transaction Complete!",
+			title: "Tx Notification",
+			position: "topR",
+			icon: <Bell/>
+		})
+	}
+
 	useEffect(() => {
 		if (isWeb3Enabled) {
 			async function updateUI() {
@@ -42,8 +61,12 @@ export default function LotteryEntrance() {
 			{raffleAddress ? (
 				<div>
 					<button
-						onClick={() => {
-							enterRaffle()
+						className="bg-blue-500"
+						onClick={async () => {
+							await enterRaffle({
+								onSuccess: handleSuccess,
+								onError: (error) => console.log(error),
+							})
 						}}
 					>
 						Enter Raffle
