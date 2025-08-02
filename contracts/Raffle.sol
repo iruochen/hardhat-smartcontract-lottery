@@ -127,7 +127,6 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
 				uint256(s_raffleState)
 			);
 		}
-		s_raffleState = RaffleState.CALCULATING;
 		uint256 requestId = s_vrfCoordinator.requestRandomWords(
 			VRFV2PlusClient.RandomWordsRequest({
 				// gasLine
@@ -141,6 +140,8 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
 				)
 			})
 		);
+		require(requestId > 0, 'Request ID invalid');
+		s_raffleState = RaffleState.CALCULATING;
 		// This is redundant!
 		emit RequestedRaffleWinner(requestId);
 	}
@@ -197,5 +198,13 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
 
 	function getInterval() public view returns (uint256) {
 		return i_interval;
+	}
+
+	function getBalance() public view returns (uint256) {
+		return address(this).balance;
+	}
+
+	function getBlockTimestamp() public view returns (uint256) {
+		return block.timestamp;
 	}
 }
