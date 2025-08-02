@@ -10,7 +10,7 @@ export default function Home() {
 	return (
 		<MoralisProvider initializeOnMount={false}>
 			<NotificationProvider>
-				<main className="bg-violet-100 min-h-screen ">
+				<main>
 					<Header />
 					<LotteryEntrance />
 				</main>

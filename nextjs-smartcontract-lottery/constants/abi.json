@@ -461,13 +461,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "setRaffleState",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
