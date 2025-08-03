@@ -12,6 +12,7 @@ import {VRFConsumerBaseV2Plus} from '@chainlink/contracts/src/v0.8/vrf/dev/VRFCo
 import {VRFV2PlusClient} from '@chainlink/contracts/src/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol';
 import {AutomationCompatibleInterface} from '@chainlink/contracts/src/v0.8/automation/AutomationCompatible.sol';
 
+error Raffle__NotOwner();
 error Raffle__NotEnoughETHEntered();
 error Raffle__TransferFailed();
 error Raffle__NotOpen();
@@ -55,7 +56,8 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
 	// The timestamp of the last time the raffle was drawn
 	uint256 private s_lastTimeStamp;
 	// The interval at which the raffle is drawn
-	uint256 private immutable i_interval;
+	uint256 private s_interval;
+	address private immutable i_owner;
 
 	/** Events */
 	event RaffleEntered(address indexed player);
@@ -71,13 +73,14 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
 		uint32 callbackGasLimit,
 		uint256 interval
 	) VRFConsumerBaseV2Plus(vrfCoordinator) {
+		i_owner = msg.sender;
 		i_entranceFee = entranceFee;
 		i_gasLine = gasLine;
 		i_subscriptionId = subscriptionId;
 		i_callbackGasLimit = callbackGasLimit;
 		s_raffleState = RaffleState.OPEN;
 		s_lastTimeStamp = block.timestamp;
-		i_interval = interval;
+		s_interval = interval;
 	}
 
 	function enterRaffle() public payable {
@@ -112,7 +115,7 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
 		returns (bool upkeepNeeded, bytes memory /* performData */)
 	{
 		bool isOpen = (RaffleState.OPEN == s_raffleState);
-		bool timePassed = ((block.timestamp - s_lastTimeStamp) > i_interval);
+		bool timePassed = ((block.timestamp - s_lastTimeStamp) > s_interval);
 		bool hasPlayers = (s_players.length > 0);
 		bool hasBalance = (address(this).balance > 0);
 		upkeepNeeded = (isOpen && timePassed && hasPlayers && hasBalance);
@@ -163,6 +166,14 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
 		emit WinnerPicked(recentWinner);
 	}
 
+	function setInterval(uint256 _interval) public onlyOwner {
+		s_interval = _interval;
+	}
+
+	function setRaffleState() public onlyOwner {
+		s_raffleState = RaffleState.OPEN;
+	}
+
 	/** View / Pure functions */
 	function getEntranceFee() public view returns (uint256) {
 		return i_entranceFee;
@@ -197,7 +208,7 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
 	}
 
 	function getInterval() public view returns (uint256) {
-		return i_interval;
+		return s_interval;
 	}
 
 	function getBalance() public view returns (uint256) {

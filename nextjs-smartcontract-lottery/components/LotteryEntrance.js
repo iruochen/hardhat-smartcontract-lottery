@@ -1,5 +1,5 @@
 import { useWeb3Contract } from "react-moralis"
-import { abi, contractAddress } from "@/constants"
+import { contractAbi, contractAddress } from "@/constants"
 import { useMoralis } from "react-moralis"
 import { useEffect, useState } from "react"
 import { ethers } from "ethers"
@@ -15,11 +15,12 @@ export default function LotteryEntrance() {
 	const [entranceFee, setEntranceFee] = useState("0")
 	const [numPlayers, setNumPlayers] = useState("0")
 	const [recentWinner, setRecentWinner] = useState("0")
+	const [contractBalance, setContractBalance] = useState("0")
 
 	const dispatch = useNotification()
-
 	const raffleAddress =
-		chainId in contractAddress ? contractAddress[chainId][0] : null
+		chainId in contractAddress ? contractAddress[chainId] : null
+	const abi = chainId in contractAbi ? contractAbi[chainId] : null
 
 	const {
 		runContractFunction: enterRaffle,
@@ -34,23 +35,30 @@ export default function LotteryEntrance() {
 	})
 
 	const { runContractFunction: getEntranceFee } = useWeb3Contract({
-		abi: abi,
+		abi,
 		contractAddress: raffleAddress,
 		functionName: "getEntranceFee",
 		params: {},
 	})
 
 	const { runContractFunction: getNumberOfPlayers } = useWeb3Contract({
-		abi: abi,
+		abi,
 		contractAddress: raffleAddress,
 		functionName: "getNumberOfPlayers",
 		params: {},
 	})
 
 	const { runContractFunction: getRecentWinner } = useWeb3Contract({
-		abi: abi,
+		abi,
 		contractAddress: raffleAddress,
 		functionName: "getRecentWinner",
+		params: {},
+	})
+
+	const { runContractFunction: getBalance } = useWeb3Contract({
+		abi,
+		contractAddress: raffleAddress,
+		functionName: "getBalance",
 		params: {},
 	})
 
@@ -139,6 +147,12 @@ export default function LotteryEntrance() {
 					<p>
 						<span className="font-mono font-semibold">Number Of Players:</span>{" "}
 						{numPlayers}
+					</p>
+					<p>
+						<span className="font-mono font-semibold">Contract Balance:</span>{" "}
+						{contractBalance &&
+							ethers.utils.formatUnits(contractBalance, "ether")}{" "}
+						ETH
 					</p>
 					<p className="break-all">
 						<span className="font-mono font-semibold">Recent Winner:</span>{" "}
