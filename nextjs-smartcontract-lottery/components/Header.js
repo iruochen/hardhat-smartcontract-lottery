@@ -1,14 +1,19 @@
 "use client"
 
-import { ConnectButton } from "@web3uikit/web3"
-
 export default function Header() {
 	return (
-		<div className="border-b-2 flex flex-row">
-			<h1 className="py-4 px-4 font-blog text-3xl">Decentralized Lottery</h1>
-			<div className="ml-auto py-4 px-4">
-				<ConnectButton moralisAuth={false} />
-			</div>
-		</div>
+		<header
+			className="
+        fixed top-0 left-0 right-0 
+        flex justify-between items-center 
+        p-5 bg-white/10 backdrop-blur-sm 
+        border-b border-white/20 
+      "
+			style={{ maxHeight: "none", overflow: "visible" }}
+		>
+			<h1 className="text-2xl font-semibold text-white drop-shadow-md">
+				🎰 Decentralized Lottery
+			</h1>
+		</header>
 	)
 }

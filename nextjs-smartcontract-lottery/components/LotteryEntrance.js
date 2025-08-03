@@ -98,12 +98,14 @@ export default function LotteryEntrance() {
 	}, [raffleAddress, isWeb3Enabled])
 
 	return (
-		<div className="p-5">
-			Hi from lottery entrance!
+		<div className="max-w-2xl mx-auto mt-12 p-8 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-lg text-white space-y-6">
+			<h2 className="text-3xl font-bold text-center drop-shadow-md">
+				🎟️ Lottery Entrance
+			</h2>
 			{raffleAddress ? (
 				<div>
 					<button
-						className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-auto"
+						className="w-full py-3 rounded-lg font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
 						onClick={async () => {
 							await enterRaffle({
 								onSuccess: handleSuccess,
@@ -113,19 +115,30 @@ export default function LotteryEntrance() {
 						disabled={isLoading || isFetching}
 					>
 						{isLoading || isFetching ? (
-							<div className="animate-spin spinner-border h-8 w-8 border-b-2 rounded-full"></div>
+							<div className="flex justify-center">
+								<div className="animate-spin h-6 w-6 border-4 border-white border-t-transparent rounded-full"></div>
+							</div>
 						) : (
-							<div>Enter Raffle</div>
+							"Enter Raffle"
 						)}
 					</button>
-					<div>
-						Entrance Fee: {ethers.utils.formatUnits(entranceFee, "ether")} ETH
-					</div>
-					<div>Number Of Players: {numPlayers}</div>
-					<div>Recent Winner: {recentWinner}</div>
-				</div>
+					<p>
+						<span className="font-mono font-semibold">Entrance Fee:</span>{" "}
+						{entranceFee && ethers.utils.formatUnits(entranceFee, "ether")} ETH
+					</p>
+					<p>
+						<span className="font-mono font-semibold">Number Of Players:</span>{" "}
+						{numPlayers}
+					</p>
+					<p className="break-all">
+						<span className="font-mono font-semibold">Recent Winner:</span>{" "}
+						{recentWinner}
+					</p>
+				</>
 			) : (
-				<div>No Raffle Address Detected</div>
+				<p className="text-red-400 text-center font-semibold">
+					No Raffle Address Detected
+				</p>
 			)}
 		</div>
 	)
