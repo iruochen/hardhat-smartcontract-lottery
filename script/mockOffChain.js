@@ -32,7 +32,6 @@ async function mockVrf(requestId, raffle) {
 		const vrfCoordinatorV2_5MockDeployment = await deployments.get(
 			'VRFCoordinatorV2_5Mock',
 		)
-		console.log(vrfCoordinatorV2_5MockDeployment.address)
 		const vrfCoordinatorV2_5Mock = await ethers.getContractAt(
 			'VRFCoordinatorV2_5Mock',
 			vrfCoordinatorV2_5MockDeployment.address,

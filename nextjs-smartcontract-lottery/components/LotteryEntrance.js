@@ -5,10 +5,13 @@ import { useEffect, useState } from "react"
 import { ethers } from "ethers"
 import { useNotification } from "@web3uikit/core"
 import { Bell } from "@web3uikit/icons"
+import useIsSupportedNetwork from "@/hooks/useIsSupportedNetwork"
+import useFilteredContractEvent from "@/hooks/useFilteredContractEvent"
 
 export default function LotteryEntrance() {
 	const { chainId: chainIdHex, isWeb3Enabled } = useMoralis()
 	const chainId = parseInt(chainIdHex)
+	const { isSupported } = useIsSupportedNetwork()
 	const [entranceFee, setEntranceFee] = useState("0")
 	const [numPlayers, setNumPlayers] = useState("0")
 	const [recentWinner, setRecentWinner] = useState("0")
@@ -23,7 +26,7 @@ export default function LotteryEntrance() {
 		isLoading,
 		isFetching,
 	} = useWeb3Contract({
-		abi: abi,
+		abi,
 		contractAddress: raffleAddress,
 		functionName: "enterRaffle",
 		params: {},
@@ -68,42 +71,49 @@ export default function LotteryEntrance() {
 	}
 
 	async function updateUI() {
-		const entranceFeeFromCall = (await getEntranceFee()).toString()
-		const numPlayersFromCall = (await getNumberOfPlayers()).toString()
-		const recentWinnerFromCall = await getRecentWinner()
-		setEntranceFee(entranceFeeFromCall)
-		setNumPlayers(numPlayersFromCall)
-		setRecentWinner(recentWinnerFromCall)
+		console.log("updating UI ....")
+		try {
+			const entranceFeeFromCall = (await getEntranceFee())?.toString() || "0"
+			const numPlayersFromCall = (await getNumberOfPlayers())?.toString() || "0"
+			const recentWinnerFromCall = await getRecentWinner()
+			const contractBalanceFromCall = (await getBalance())?.toString() || "0"
+			setEntranceFee(entranceFeeFromCall)
+			setNumPlayers(numPlayersFromCall)
+			setRecentWinner(recentWinnerFromCall)
+			setContractBalance(contractBalanceFromCall)
+		} catch (e) {
+			console.error("updateUI failed: ", e)
+		}
 	}
 
 	useEffect(() => {
-		if (isWeb3Enabled) {
+		if (isWeb3Enabled) updateUI()
+	}, [isWeb3Enabled, chainId])
+
+	useFilteredContractEvent({
+		eventName: "WinnerPicked",
+		contractAddress: raffleAddress,
+		abi,
+		enabled: isWeb3Enabled,
+		onEvent: (winner) => {
+			console.log("📣 WinnerPicked event fired!", winner)
 			updateUI()
-		}
-	}, [isWeb3Enabled])
-
-	useEffect(() => {
-		if (!raffleAddress || !isWeb3Enabled) return
-		const provider = new ethers.providers.Web3Provider(window.ethereum)
-		const contract = new ethers.Contract(raffleAddress, abi, provider)
-
-		const onWinnerPicked = () => {
-			updateUI()
-		}
-
-		contract.on("WinnerPicked", onWinnerPicked)
-		return () => {
-			contract.off("WinnerPicked", onWinnerPicked)
-		}
-	}, [raffleAddress, isWeb3Enabled])
+		},
+	})
 
 	return (
 		<div className="max-w-2xl mx-auto mt-12 p-8 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-lg text-white space-y-6">
 			<h2 className="text-3xl font-bold text-center drop-shadow-md">
 				🎟️ Lottery Entrance
 			</h2>
+			{!isSupported && (
+				<p className="text-yellow-300 font-semibold text-center">
+					⚠️ Please connect to the Sepolia network to participate in the lottery
+				</p>
+			)}
+
 			{raffleAddress ? (
-				<div>
+				<>
 					<button
 						className="w-full py-3 rounded-lg font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
 						onClick={async () => {
