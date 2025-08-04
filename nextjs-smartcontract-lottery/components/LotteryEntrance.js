@@ -82,9 +82,13 @@ export default function LotteryEntrance() {
 		console.log("updating UI ....")
 		try {
 			const entranceFeeFromCall = (await getEntranceFee())?.toString() || "0"
+			console.log("entranceFeeFromCall: ", entranceFeeFromCall)
 			const numPlayersFromCall = (await getNumberOfPlayers())?.toString() || "0"
+			console.log("numPlayersFromCall: ", numPlayersFromCall)
 			const recentWinnerFromCall = await getRecentWinner()
+			console.log("recentWinnerFromCall: ", recentWinnerFromCall)
 			const contractBalanceFromCall = (await getBalance())?.toString() || "0"
+			console.log("contractBalanceFromCall: ", contractBalanceFromCall)
 			setEntranceFee(entranceFeeFromCall)
 			setNumPlayers(numPlayersFromCall)
 			setRecentWinner(recentWinnerFromCall)
@@ -102,11 +106,14 @@ export default function LotteryEntrance() {
 		eventName: "WinnerPicked",
 		contractAddress: raffleAddress,
 		abi,
-		enabled: isWeb3Enabled,
+		enabled: true,
 		onEvent: (winner) => {
 			console.log("📣 WinnerPicked event fired!", winner)
-			updateUI()
+			setTimeout(() => {
+				updateUI()
+			}, 10000)
 		},
+		wsRpcUrl: "ws://127.0.0.1:8545",
 	})
 
 	return (

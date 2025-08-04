@@ -83,6 +83,10 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
 		s_interval = interval;
 	}
 
+	receive() external payable {}
+
+	fallback() external payable {}
+
 	function enterRaffle() public payable {
 		// require msg.value >= i_entranceFee, "Not enough ETH!");
 		if (msg.value < i_entranceFee) {

@@ -8,18 +8,21 @@ export default function useFilteredContractEvent({
 	abi,
 	enabled = true,
 	onEvent,
+	wsRpcUrl,
 }) {
-	const { provider } = useMoralis()
 	useEffect(() => {
-		if (!enabled || !contractAddress || !abi || !provider) return
+		if (!enabled || !contractAddress || !abi || !wsRpcUrl) return
 
-		const ethersProvider = new ethers.providers.Web3Provider(provider)
-		const contract = new ethers.Contract(contractAddress, abi, ethersProvider)
+		const provider = new ethers.providers.WebSocketProvider(wsRpcUrl)
+		const contract = new ethers.Contract(contractAddress, abi, provider)
 
 		contract.on(eventName, onEvent)
+		console.log(`[${eventName}]监听已注册`)
 
 		return () => {
-			contract.off(eventName, onEvent)
+			console.log(`[${eventName}]监听已取消`)
+			contract.removeAllListeners(eventName)
+			provider.destroy()
 		}
-	}, [eventName, contractAddress, abi, enabled, provider])
+	}, [eventName, contractAddress, abi, enabled, wsRpcUrl])
 }

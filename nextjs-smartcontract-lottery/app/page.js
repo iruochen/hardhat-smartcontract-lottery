@@ -5,12 +5,10 @@ import { NotificationProvider } from "@web3uikit/core"
 import Header from "@/components/Header"
 import LotteryEntrance from "@/components/LotteryEntrance"
 import SafeConnectButton from "@/components/SafeConnectButton"
-import { useMoralis } from "react-moralis"
 import { useState, useEffect } from "react"
 import LoadingOverlay from "@/components/LoadingOverlay"
 
 function PageContent() {
-	const { isWeb3EnableLoading } = useMoralis()
 	const [stylesReady, setStylesReady] = useState(false)
 
 	useEffect(() => {
@@ -19,7 +17,7 @@ function PageContent() {
 		return () => clearTimeout(timeout)
 	}, [])
 
-	const isAppReady = stylesReady && !isWeb3EnableLoading
+	const isAppReady = stylesReady
 
 	if (!isAppReady) {
 		return <LoadingOverlay message="Loading Web3 UI..." />
