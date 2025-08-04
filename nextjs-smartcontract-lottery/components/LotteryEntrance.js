@@ -109,11 +109,26 @@ export default function LotteryEntrance() {
 		enabled: true,
 		onEvent: (winner) => {
 			console.log("📣 WinnerPicked event fired!", winner)
-			setTimeout(() => {
-				updateUI()
-			}, 10000)
+			// let retry = 0
+			// const pollUpdatedState = async () => {
+			// 	try {
+			// 		const players = await getNumberOfPlayers()
+			// 		if (players.toString() === "0") {
+			// 			console.log("✅ players reset, updating UI")
+			// 			updateUI()
+			// 		} else if (retry < 10) {
+			// 			setTimeout(pollUpdatedState, 1000)
+			// 			retry++
+			// 		} else {
+			// 			console.warn("⏰ Timed out waiting for state update")
+			// 		}
+			// 	} catch (e) {
+			// 		console.error("Error polling state", e)
+			// 	}
+			// }
+			// setTimeout(pollUpdatedState, 2000)
 		},
-		wsRpcUrl: "ws://127.0.0.1:8545",
+		// wsRpcUrl: "ws://127.0.0.1:8545",
 	})
 
 	return (

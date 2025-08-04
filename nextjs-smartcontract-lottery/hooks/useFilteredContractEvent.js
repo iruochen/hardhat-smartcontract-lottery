@@ -1,6 +1,5 @@
 import { useEffect } from "react"
 import { ethers } from "ethers"
-import { useMoralis } from "react-moralis"
 
 export default function useFilteredContractEvent({
 	eventName,
@@ -8,10 +7,10 @@ export default function useFilteredContractEvent({
 	abi,
 	enabled = true,
 	onEvent,
-	wsRpcUrl,
+	// wsRpcUrl,
 }) {
 	useEffect(() => {
-		if (!enabled || !contractAddress || !abi || !wsRpcUrl) return
+		if (!enabled || !contractAddress || !abi) return
 
 		const provider = new ethers.providers.WebSocketProvider(wsRpcUrl)
 		const contract = new ethers.Contract(contractAddress, abi, provider)
@@ -24,5 +23,5 @@ export default function useFilteredContractEvent({
 			contract.removeAllListeners(eventName)
 			provider.destroy()
 		}
-	}, [eventName, contractAddress, abi, enabled, wsRpcUrl])
+	}, [eventName, contractAddress, abi, enabled])
 }
